@@ -2,9 +2,10 @@
   <mat-form-field>
     <mat-label>Dropdown Test</mat-label>
     <mat-select
-      (openedChange)="openedChanged($event)"
+      (selectionChange)="selectionChange()"
       [formControl]="selectControl"
       [placeholder]="placeholder"
+      (openedChange)="openedChanged($event)"
     >
       <mat-option>
         <ngx-mat-select-search

@@ -14,7 +14,10 @@ export class AppComponent implements OnInit {
   selectControl: FormControl = new FormControl();
   filterControl: FormControl = new FormControl();
   placeholder: string = "Search or search";
+  selectedValue: string = '';
+  filter: string = '';
   options: Option[] = [];
+  filteredList: Option[] = [];
   filteredSearch: ReplaySubject<Option[]> = new ReplaySubject<Option[]>(1);
   @ViewChild(CdkVirtualScrollViewport)
   cdkVirtualScrollViewport: CdkVirtualScrollViewport | undefined;
@@ -38,16 +41,26 @@ export class AppComponent implements OnInit {
       .valueChanges
       .subscribe({
         next: () => {
-          const filteredList: Option[] = this.options.filter(
-            option => option.label.toLowerCase().indexOf(this.filterControl.value.toLowerCase()) >= 0
+          this.filter = this.filterControl.value.toLowerCase();
+          this.filteredList = this.options.filter(
+            option => option.label.toLowerCase().indexOf(this.filter) >= 0
           );
-          this.filteredSearch.next(filteredList);
+          this.filteredSearch.next(this.filteredList);
         }
       });
   }
 
   openedChanged($event: any) {
-    this.cdkVirtualScrollViewport?.scrollToIndex(0);
-    this.cdkVirtualScrollViewport?.checkViewportSize();
+    if ($event) {
+      const scrollIndex = this.filteredList.length > 0 ?
+        this.filteredList.findIndex(option => option.value === this.selectedValue)
+        : 0;
+      this.cdkVirtualScrollViewport?.scrollToIndex(scrollIndex);
+      this.cdkVirtualScrollViewport?.checkViewportSize();
+    }
+  }
+
+  selectionChange() {
+    this.selectedValue = this.selectControl.value;
   }
 }
